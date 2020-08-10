@@ -1,11 +1,13 @@
 package guru.springframework.petclinicapp.services.map;
 
 import guru.springframework.petclinicapp.model.Vet;
-import guru.springframework.petclinicapp.services.CrudService;
+import guru.springframework.petclinicapp.services.VetService;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-public class VetMapService extends AbstracMapService<Vet, Long> implements CrudService<Vet, Long> {
+@Service
+public class VetMapService extends AbstractMapService<Vet, Long> implements VetService {
 
     @Override
     public Set<Vet> findAll() {
@@ -19,7 +21,7 @@ public class VetMapService extends AbstracMapService<Vet, Long> implements CrudS
 
     @Override
     public Vet save(Vet object) {
-        return super.save(object, object.getId());
+        return super.save(object);
     }
 
     @Override
