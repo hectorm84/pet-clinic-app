@@ -1,21 +1,25 @@
 package guru.springframework.petclinicapp.model;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name = "owners")
 public class Owner extends Person {
-    private Set<Pet> pets = new HashSet<>();
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "telephone")
     private String telephone;
+
+    @Column(name = "city")
     private String city;
 
-    public Set<Pet> getPets() {
-        return pets;
-    }
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Set<Pet> pets = new HashSet<>();
 
-    public void setPets(Set<Pet> pets) {
-        this.pets = pets;
-    }
 
     public String getAddress() {
         return address;
@@ -39,5 +43,19 @@ public class Owner extends Person {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Set<Pet> getPets() {
+        return pets;
+    }
+
+    public void setPets(Set<Pet> pets) {
+        this.pets = pets;
+    }
+
+    public Owner addPet(Pet pet){
+        pet.setOwner(this);
+        this.getPets().add(pet);
+        return this;
     }
 }

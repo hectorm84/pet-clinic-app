@@ -1,12 +1,29 @@
 package guru.springframework.petclinicapp.model;
 
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+@Entity
+@Table(name = "pets")
 public class Pet extends BaseEntity {
+
+    @Column(name = "name")
     private String name;
-    private PetType petType;
-    private Owner owner;
+
+    @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @ManyToOne
+    @JoinColumn(name = "type_id", referencedColumnName = "id")
+    private PetType petType;
+
+    @ManyToOne
+    private Owner owner;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pet")
+    private Set<Visit> visits = new HashSet<>();
 
     public String getName() {
         return name;
@@ -14,6 +31,14 @@ public class Pet extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public PetType getPetType() {
@@ -32,11 +57,11 @@ public class Pet extends BaseEntity {
         this.owner = owner;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public Set<Visit> getVisits() {
+        return visits;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setVisits(Set<Visit> visits) {
+        this.visits = visits;
     }
 }
