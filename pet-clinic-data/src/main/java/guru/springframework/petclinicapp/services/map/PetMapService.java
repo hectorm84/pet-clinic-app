@@ -3,11 +3,13 @@ package guru.springframework.petclinicapp.services.map;
 import guru.springframework.petclinicapp.model.Pet;
 import guru.springframework.petclinicapp.services.CrudService;
 import guru.springframework.petclinicapp.services.PetService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
+@Profile({"default", "map"})
 public class PetMapService extends AbstractMapService<Pet, Long> implements PetService {
     @Override
     public Set<Pet> findAll() {
@@ -35,30 +37,4 @@ public class PetMapService extends AbstractMapService<Pet, Long> implements PetS
     }
 }
 
-class PetMapService2 implements CrudService<Pet, Long>{
 
-    @Override
-    public Set<Pet> findAll() {
-        return null;
-    }
-
-    @Override
-    public Pet findById(Long aLong) {
-        return null;
-    }
-
-    @Override
-    public Pet save(Pet object) {
-        return null;
-    }
-
-    @Override
-    public void delete(Pet object) {
-
-    }
-
-    @Override
-    public void deleteById(Long aLong) {
-
-    }
-}

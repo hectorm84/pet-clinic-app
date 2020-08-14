@@ -1,0 +1,271 @@
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Vet.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Vet.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Vet.java	(date 1597357286813)
+@@ -1,10 +1,19 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.*;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++@Entity
++@Table(name = "vets")
+ public class Vet extends Person {
+ 
++    @ManyToMany(fetch = FetchType.EAGER)
++    @JoinTable(
++            name = "vets_specialies",
++            joinColumns = @JoinColumn(name = "vet_id"),
++            inverseJoinColumns = @JoinColumn(name = "pecialy_id")
++    )
+     private Set<Speciality> specialities = new HashSet<>();
+ 
+     public Set<Speciality> getSpecialities() {
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Owner.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Owner.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Owner.java	(date 1597358485934)
+@@ -1,21 +1,25 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.*;
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++@Entity
++@Table(name = "owners")
+ public class Owner extends Person {
+-    private Set<Pet> pets = new HashSet<>();
++
++    @Column(name = "address")
+     private String address;
++
++    @Column(name = "telephone")
+     private String telephone;
++
++    @Column(name = "city")
+     private String city;
+ 
+-    public Set<Pet> getPets() {
+-        return pets;
+-    }
++    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
++    private Set<Pet> pets = new HashSet<>();
+ 
+-    public void setPets(Set<Pet> pets) {
+-        this.pets = pets;
+-    }
+ 
+     public String getAddress() {
+         return address;
+@@ -40,4 +44,18 @@
+     public void setCity(String city) {
+         this.city = city;
+     }
++
++    public Set<Pet> getPets() {
++        return pets;
++    }
++
++    public void setPets(Set<Pet> pets) {
++        this.pets = pets;
++    }
++
++    public Owner addPet(Pet pet){
++        pet.setOwner(this);
++        this.getPets().add(pet);
++        return this;
++    }
+ }
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/BaseEntity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/BaseEntity.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/BaseEntity.java	(date 1597354127923)
+@@ -1,9 +1,16 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.GeneratedValue;
++import javax.persistence.GenerationType;
++import javax.persistence.Id;
++import javax.persistence.MappedSuperclass;
+ import java.io.Serializable;
+ 
++@MappedSuperclass
+ public class BaseEntity implements Serializable {
+ 
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
+     private Long id;
+ 
+     public Long getId() {
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/PetType.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/PetType.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/PetType.java	(date 1597356372308)
+@@ -1,7 +1,12 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.*;
++
++@Entity
++@Table(name = "pet_type")
+ public class PetType extends BaseEntity {
+ 
++    @Column(name = "name")
+     private String name;
+ 
+     public String getName() {
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Person.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Person.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Person.java	(date 1597356205549)
+@@ -1,9 +1,15 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.Column;
++import javax.persistence.MappedSuperclass;
+ 
++@MappedSuperclass
+ public class Person extends BaseEntity {
+ 
++    @Column(name = "first_name")
+     private String firstName;
++
++    @Column(name = "last_name")
+     private  String lastName;
+ 
+     public Person() {
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Pet.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Pet.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Pet.java	(date 1597358099265)
+@@ -1,12 +1,29 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.*;
+ import java.time.LocalDate;
++import java.util.HashSet;
++import java.util.Set;
+ 
++@Entity
++@Table(name = "pets")
+ public class Pet extends BaseEntity {
++
++    @Column(name = "name")
+     private String name;
++
++    @Column(name = "birth_date")
++    private LocalDate birthDate;
++
++    @ManyToOne
++    @JoinColumn(name = "type_id", referencedColumnName = "id")
+     private PetType petType;
++
++    @ManyToOne
+     private Owner owner;
+-    private LocalDate birthDate;
++
++    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pet")
++    private Set<Visit> visits = new HashSet<>();
+ 
+     public String getName() {
+         return name;
+@@ -16,6 +33,14 @@
+         this.name = name;
+     }
+ 
++    public LocalDate getBirthDate() {
++        return birthDate;
++    }
++
++    public void setBirthDate(LocalDate birthDate) {
++        this.birthDate = birthDate;
++    }
++
+     public PetType getPetType() {
+         return petType;
+     }
+@@ -32,11 +57,11 @@
+         this.owner = owner;
+     }
+ 
+-    public LocalDate getBirthDate() {
+-        return birthDate;
++    public Set<Visit> getVisits() {
++        return visits;
+     }
+ 
+-    public void setBirthDate(LocalDate birthDate) {
+-        this.birthDate = birthDate;
++    public void setVisits(Set<Visit> visits) {
++        this.visits = visits;
+     }
+ }
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Visit.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Visit.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Visit.java	(date 1597358099285)
+@@ -1,11 +1,19 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.*;
+ import java.time.LocalDate;
+ 
++@Entity
++@Table(name = "visits")
+ public class Visit extends BaseEntity{
+ 
++    @Column(name = "visit_date")
+     private LocalDate date;
++
++    @Column(name = "description")
+     private String description;
++
++    @ManyToOne
+     private Pet pet;
+ 
+     public LocalDate getDate() {
+Index: pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Speciality.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Speciality.java	(revision 427abeb50a67d58c6e770666abf52961ffccb32d)
++++ pet-clinic-data/src/main/java/guru/springframework/petclinicapp/model/Speciality.java	(date 1597357366244)
+@@ -1,7 +1,14 @@
+ package guru.springframework.petclinicapp.model;
+ 
++import javax.persistence.Column;
++import javax.persistence.Entity;
++import javax.persistence.Table;
++
++@Entity
++@Table(name = "Specialities")
+ public class Speciality extends BaseEntity{
+ 
++    @Column(name = "description")
+     private String description;
+ 
+     public String getDescription() {

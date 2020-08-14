@@ -1,10 +1,7 @@
 package guru.springframework.petclinicapp.bootstrap;
 
 import guru.springframework.petclinicapp.model.*;
-import guru.springframework.petclinicapp.services.OwnerService;
-import guru.springframework.petclinicapp.services.PetTypeService;
-import guru.springframework.petclinicapp.services.SpecialityService;
-import guru.springframework.petclinicapp.services.VetService;
+import guru.springframework.petclinicapp.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,14 +15,16 @@ public class DataLoader implements CommandLineRunner {
     private final VetService vetService;
     private final PetTypeService petTypeService;
     private final SpecialityService specialityService;
+    private final VisitService visitService;
 
     @Autowired
-    public DataLoader(OwnerService ownerService, VetService vetService, PetTypeService petTypeService, SpecialityService specialityService) {
+    public DataLoader(OwnerService ownerService, VetService vetService, PetTypeService petTypeService, SpecialityService specialityService, VisitService visitService) {
 
         this.ownerService = ownerService;
         this.vetService = vetService;
         this.petTypeService = petTypeService;
         this.specialityService = specialityService;
+        this.visitService = visitService;
     }
 
     @Override
@@ -99,7 +98,6 @@ public class DataLoader implements CommandLineRunner {
         jacCat.setOwner(owner2);
         owner2.getPets().add(jacCat);
 
-
         vet1.setFirstName("Hebert");
         vet1.setLastName("Hernandez");
         vet1.getSpecialities().add(savedRadiology);
@@ -112,6 +110,12 @@ public class DataLoader implements CommandLineRunner {
         ownerService.save(owner2);
         vetService.save(vet1);
         vetService.save(vet2);
+
+        Visit visit1 = new Visit();
+        visit1.setDate(LocalDate.now());
+        visit1.setDescription("check cat health");
+        visit1.setPet(jacCat);
+        visitService.save(visit1);
     }
 }
  
