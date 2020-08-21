@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,9 +38,7 @@ public class OwnerSDjpaService implements OwnerService {
     @Override
     public Set<Owner> findAll() {
         Set<Owner> owners = new HashSet<>();
-        ownerRepository.findAll().forEach(o->{
-            owners.add(o);
-        });
+        ownerRepository.findAll().forEach(owners::add);
         return owners;
     }
 
@@ -67,5 +66,10 @@ public class OwnerSDjpaService implements OwnerService {
         if(owner.isPresent())
             ownerRepository.deleteById(id);
 
+    }
+
+    @Override
+    public List<Owner> findAllByLastNameLike(String lastName) {
+        return ownerRepository.findAllByLastNameLike(lastName);
     }
 }
